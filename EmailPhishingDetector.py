@@ -46,6 +46,11 @@ def spelling_errors(email_body):
     print('SPELLING ERRORS')
     print('# errors: ', num_errors, ' percentage: ', percentage,"%")
 
+
+
+    if percentage > 50:
+        partial_score = 9
+
     return partial_score
 
 
@@ -123,6 +128,59 @@ def examine_sender(email_sender):
     return partial_score
 
 
+def write_to_blacklist(email_sender):
+
+    new_addition = "\n" + email_sender
+
+    with open('blacklist.txt') as f:
+        if email_sender in f.read():
+            print(email_sender, " already in blacklist")
+            return
+        else:
+            passwords = open("blacklist.txt", "a")
+            passwords.write(new_addition)
+            passwords.close()
+
+
+def check_blacklist(email_sender):
+
+    on_blacklist = False
+
+    sender_split = email_sender.split('@')
+
+    second_part = sender_split[1]
+
+    with open('blacklist.txt') as f:
+
+        if email_sender in f.read():
+            print("\n", email_sender, " ON BLACKLIST")
+            on_blacklist = True
+
+        if second_part in f.read():
+            print("\n", second_part, " ON BLACKLIST")
+            on_blacklist = True
+
+
+
+
+    return on_blacklist
+
+
+def check_whitelist(email_sender):
+
+    on_whitelist = False
+
+    sender_split = email_sender.split('@')
+
+    second_part = sender_split[1]
+
+    with open('whitelist.txt') as f:
+        if second_part in f.read():
+            print("\n", second_part, " ON WHITELIST")
+            on_whitelist = True
+
+
+    return on_whitelist
 
 
 def score_email(email_sender,  email_body):
@@ -137,6 +195,18 @@ def score_email(email_sender,  email_body):
 
     score -= examine_sender(email_sender)
 
+    on_blacklist = check_blacklist(email_sender)
+    if on_blacklist == True:
+        score = 1
+
+    on_whitelist = check_whitelist(email_sender)
+    if on_whitelist == True:
+        score = 10
+
+
+    if score == 1:
+        write_to_blacklist(email_sender)
+
     return score
 
 
@@ -149,12 +219,12 @@ def truncate(number, digits) -> float:
 
 if __name__ == '__main__':
 
-    email_sender = 'confirm-to.own@airbnb.com'
+    email_sender = 'blacklisttest1@testing.com'
 
-    email_body_input = "dhl a muscket for home defense, and that's what the founding fathers dhl."
+    email_body_input = "testng"
 
 
-
+    #turns email body into list of words separated by spaces
     email_body = re.sub("[^\w]", " ", email_body_input).split()
 
     score = score_email(email_sender, email_body)
