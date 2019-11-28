@@ -189,19 +189,21 @@ def score_email(email_sender,  email_body):
 
     score = 10
 
+    on_whitelist = check_whitelist(email_sender)
+    if on_whitelist == True:
+        score = 10
+        return score
+
+    on_blacklist = check_blacklist(email_sender)
+    if on_blacklist == True:
+        score = 1
+        return score
+
     score -= spelling_errors(email_body)
 
     score -= phishing_terms(email_body)
 
     score -= examine_sender(email_sender)
-
-    on_blacklist = check_blacklist(email_sender)
-    if on_blacklist == True:
-        score = 1
-
-    on_whitelist = check_whitelist(email_sender)
-    if on_whitelist == True:
-        score = 10
 
 
     if score == 1:
@@ -219,9 +221,12 @@ def truncate(number, digits) -> float:
 
 if __name__ == '__main__':
 
-    email_sender = 'blacklisttest1@testing.com'
+    # email_sender = 'blacklisttest1@testing.com'
+    #
+    # email_body_input = "testng"
 
-    email_body_input = "testng"
+    email_sender = input("Enter sending email address: ")
+    email_body_input = input("Enter email body: ")
 
 
     #turns email body into list of words separated by spaces
