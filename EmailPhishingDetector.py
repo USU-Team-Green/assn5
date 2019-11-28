@@ -22,6 +22,11 @@ def phishing_terms(email_body):
     percentage  = (num_hits / len(email_body)) * 100
     print('percentage: ', percentage, '%')
 
+    if percentage > 5:
+        partial_score = 5
+
+    if(percentage > 10):
+        partial_score = 10
 
     return partial_score
 
