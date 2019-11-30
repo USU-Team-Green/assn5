@@ -5,7 +5,6 @@ import numpy as np
 def test_for_illegal_queries(query):
     danger_terms = [
         "convert(",
-        "()",
         "xtype",
         "varchar",
     ]
@@ -51,7 +50,7 @@ def test_for_piggyback(query):
 def test_for_inference(query):
     danger_pattern = r'\bif(?:\s+|\()' # tests for 'if ' or 'if('
     if re.search(danger_pattern, query.lower()):
-        return 1, 'Contains an if statement'
+        return 0.9, 'Probably contains an if statement'
     else:
         return 0, None
 def test_for_alternate_encoding(query):
