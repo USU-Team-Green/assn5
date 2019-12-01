@@ -71,10 +71,39 @@ def test_for_general_danger_patterns(query):
     ]
     
     nonzero_scores = list(filter(lambda x: x[0] != 0, scores_and_messages))
+    if nonzero_scores == []:
+        return 0, []
     score = np.mean([score[0] for score in nonzero_scores])
     messages = [score[1] for score in nonzero_scores]
 
     return score, messages
 
 
-    
+if __name__ == "__main__":
+    done = False
+    while not done:
+        print("Which query would you like to test?")
+        print("\t1: ItemName")
+        print("\t2: UserName and Password")
+        print("\t(q to quit)")
+        resp = input()
+        score, messages = None, None
+        if resp == 'q':
+            done = True
+        elif resp == '1':
+            resp = input('Enter ItemName: ')
+            query = 'SELECT ItemDescription, ItemPrice\nFROM Items\nWHERE ItemName = {};'.format(resp)
+            score, messages = test_for_general_danger_patterns(query)
+        else:
+            uname = input('Enter UserName: ')
+            pas = input('Enter Password: ')
+            query = 'SELECT Accounts\nFROM Users\nWHERE Username={} AND Password={};'.format(uname, pas)
+            score, messages = test_for_general_danger_patterns(query)
+        print('The score is {} ({}%)'.format(score, score * 100))
+        for mes in messages:
+            if mes:
+                print(mes)
+        resp = input("\nTry again? (Y/n) ")
+        if resp not in ['Y', 'y']:
+            done = True
+
